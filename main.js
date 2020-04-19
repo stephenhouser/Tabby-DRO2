@@ -39,35 +39,14 @@ export default function Main() {
 	};
 
 	useEffect(() => {
-		if (!bleConnected) {
-			BluetoothSerial.list()
-			.then((devices) => {
-				for (var i = 0; i < devices.length; i++) {
-					console.log(devices[i].name + ':' + devices[i].uuid);
-					if (devices[i].name == 'HC-06' || devices[i].name == 'SH-HC-08') {
-						return BluetoothSerial.connect(devices[i].uuid);
-					}
-
-				throw "No known device found to connect to.";
-				}
-			})
-			.then(() => {
-				setBleConnected(true);
-				BluetoothSerial.on('data', (data) => update(data['data']));
-				return BluetoothSerial.subscribe(";");
-			})
-			.catch((error) => {
-				console.log("ERROR: ==>");
-				console.log(error);
-			})
-		}
+		connectBle();
 	});
 
 	/* Update data from Remote */
     const update = (rawData) => {
         var axisName = rawData[0].toUpperCase();
         var rawReading = rawData.substr(1, rawData.length - 2);
-		//console.log('update(' + axisName + ', ' + rawReading + ')');
+		// console.log('update(' + axisName + ', ' + rawReading + ')');
 
 		const measurement = measurements[axisName];
 		const value = Number.parseInt(rawReading);
@@ -82,13 +61,15 @@ export default function Main() {
 	}
 
 	const setValue = (name, newValue) => {
-		console.log('setValue(' + name + ',' + newValue + ')');
+		// console.log('setValue(' + name + ',' + newValue + ')');
 
 		const measurement = measurements[name];
 		if (measurement != undefined) {
-			var newState = {...measurements}
-			newState[name].value = newValue / 2560.0; //(Math.random() * 100.0) - 33.0;
-			setMeasurements(newState);
+			const scaled = newValue / 2560.0;
+			axisValues[name].current.setNativeProps({'text': scaled.toFixed(4).toString()});
+			// var newState = {...measurements}
+			// newState[name].value = newValue / 2560.0; //(Math.random() * 100.0) - 33.0;
+			// setMeasurements(newState);
 		}
 	}
 
@@ -148,6 +129,31 @@ export default function Main() {
 		}
 	};
 
+	const connectBle = () => {
+		if (!bleConnected) {
+			BluetoothSerial.list()
+			.then((devices) => {
+				for (var i = 0; i < devices.length; i++) {
+					console.log(devices[i].name + ':' + devices[i].uuid);
+					if (devices[i].name == 'HC-06' || devices[i].name == 'SH-HC-08') {
+						return BluetoothSerial.connect(devices[i].uuid);
+					}
+
+				throw "No known device found to connect to.";
+				}
+			})
+			.then(() => {
+				setBleConnected(true);
+				BluetoothSerial.on('data', (data) => update(data['data']));
+				return BluetoothSerial.subscribe(";");
+			})
+			.catch((error) => {
+				console.log("ERROR: ==>");
+				console.log(error);
+			})
+		}
+	};
+
 	const renderLinearAxis = (axisName, axis, configuration) => {
 		return (
 			<LinearAxis	name={axisName} ref={axisValues[axisName]}
@@ -193,6 +199,7 @@ export default function Main() {
 		);
 	}
 
+	console.log("render");
 	return (
 		<View style={styles.container}>
 		 	<View style={styles.cross} >
@@ -204,6 +211,7 @@ export default function Main() {
 		 		<View style={styles.controls}>
 		 			<Controls />
 		 			<Text>Points</Text>
+					 <Button onPress={() => connectBle()}>Connect</Button>
 		 		</View>
 		 	</View>
 			<Messages />
