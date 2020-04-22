@@ -1,3 +1,8 @@
+# Tabby-DRO2
+
+Tablet DRO display that works with [Arduino-DRO](https://github.com/stephenhouser/Arduino-DRO). Compatible with [Yuriy's Touch DRO Bluetooth Scale Adapters](https://github.com/stephenhouser/Arduino-DRO) and the [Arduino DRO for Quadrature and iGaging Scales Adapter](http://rysium.com/projects/197-arduino-dro-q).
+
+
 ## Run Instructions
 
  Run instructions for iOS:
