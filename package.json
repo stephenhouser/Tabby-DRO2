@@ -13,7 +13,7 @@
     "@react-navigation/drawer": "^5.5.0",
     "@react-navigation/native": "^5.1.6",
     "react": "16.11.0",
-    "react-native": "0.62.2",
+    "react-native": "0.62.3",
     "react-native-bluetooth-serial": "git://github.com/stephenhouser/react-native-bluetooth-serial.git#dro",
     "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "^1.6.1",
